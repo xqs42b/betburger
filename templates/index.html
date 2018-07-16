@@ -54,7 +54,7 @@
             <button class='btn_login btn btn-primary'>登录</button>
             <button class='btn_logout btn btn-primary'>退出</button>
         </div>
-        <div class="col-md-6 col-md-push-6" style='height:230px; border:3px solid #444; padding: 3px;'>
+        <div class="col-md-6 col-md-push-6" style='height:240px; border:3px solid #444; padding: 3px;'>
             <table class='table table-condensed calculator' style='display: none;'>
             <!-- <table class='table table-condensed calculator' > -->
                 <tr>
@@ -146,7 +146,7 @@
                 </tr>
             </table>
         </div>
-        <div class="col-md-6 col-md-pull-6 tables" style='overflow: auto; max-height: 800px; min-height:230px; border:3px solid #444; padding:0px;'>
+        <div class="col-md-6 col-md-pull-6 tables" style='overflow: auto; max-height: 800px; min-height:240px; border:3px solid #444; padding:0px;'>
             <!-- 暂时没有数据 -->
             <div><h4 class='now_time'></h4></div>
             <table class="table table-condensed bets">
@@ -343,7 +343,7 @@
                     }
                     profit1 = (stake1 * koef1 - stake).toFixed(2);
                     profit2 = (stake2 * koef2 - stake).toFixed(2);
-                    $('.calculator').find('tr').eq(3).children('td').eq(3).children('input').eq(0).val(stake);
+                    $('.calculator').find('tr').eq(3).children('td').eq(3).children('input').eq(0).val(stake.toFixed(2));
                     $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(0).val(stake1);
                     $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(1).val(stake2);
                     $('.calculator').find('tr').eq(2).children('td').eq(6).find('span').eq(0).text(profit1);
