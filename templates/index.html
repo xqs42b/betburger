@@ -63,9 +63,9 @@
                         <!-- <small>regular time</small> -->
                     </td>
                     <td colspan="5">
-                        <b homeaway2=''><span style="cursor: pointer;color:black;" class='copy_home'>china</span> - <span class='copy_away' style="cursor: pointer;color:black;">brazil</span></b>&nbsp;&nbsp;<small style='padding-left: 4px;'>[<span>regular time</span>]</small><br/>
+                        <b homeaway2=''><span style="cursor: pointer;color:black;" class='copy_home1'>china</span> - <span class='copy_away1' style="cursor: pointer;color:black;">brazil</span></b>&nbsp;&nbsp;<small style='padding-left: 4px;'>[<span>regular time</span>]</small><br/>
                         <small>FIFA world cup</small><br>
-                        <b><span class='copy_home' style="cursor: pointer;color:black;">China</span> - <span class='copy_away' style="cursor: pointer;color:black;">Brazil</span></b><br/>
+                        <b><span class='copy_home1' style="cursor: pointer;color:black;">China</span> - <span class='copy_away1' style="cursor: pointer;color:black;">Brazil</span></b><br/>
                         <small>world cup</small>
                     </td>
                     <td>
@@ -367,6 +367,22 @@
                     layer.msg('复制成功！');
                 });
             }
+            $('.copy_home1').on('click', function() {
+                home = $(this).text();
+                var input = document.getElementById("input");
+                input.value = home;
+                input.select();
+                document.execCommand("Copy");
+                layer.msg('复制成功！');
+            });
+            $('.copy_away1').on('click', function() {
+                home = $(this).text();
+                var input = document.getElementById("input");
+                input.value = home;
+                input.select();
+                document.execCommand("Copy");
+                layer.msg('复制成功！');
+            });
 
             //判断输入值是否合理
             function is_need_value(input_val) {
