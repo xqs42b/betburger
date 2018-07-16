@@ -54,7 +54,7 @@
             <button class='btn_login btn btn-primary'>登录</button>
             <button class='btn_logout btn btn-primary'>退出</button>
         </div>
-        <div class="col-md-6 col-md-push-6" style='height:180px; border:3px solid #444; padding: 3px;'>
+        <div class="col-md-6 col-md-push-6" style='height:230px; border:3px solid #444; padding: 3px;'>
             <table class='table table-condensed calculator' style='display: none;'>
             <!-- <table class='table table-condensed calculator' > -->
                 <tr>
@@ -63,7 +63,9 @@
                         <!-- <small>regular time</small> -->
                     </td>
                     <td colspan="5">
-                        <b homeaway2=''>china - brazil</b><small style='padding-left: 4px;'>[<span>regular time</span>]</small><br/>
+                        <b homeaway2=''><span style="cursor: pointer;color:black;" class='copy_home'>china</span> - <span class='copy_away' style="cursor: pointer;color:black;">brazil</span></b>&nbsp;&nbsp;<small style='padding-left: 4px;'>[<span>regular time</span>]</small><br/>
+                        <small>FIFA world cup</small><br>
+                        <b><span class='copy_home' style="cursor: pointer;color:black;">China</span> - <span class='copy_away' style="cursor: pointer;color:black;">Brazil</span></b><br/>
                         <small>world cup</small>
                     </td>
                     <td>
@@ -144,7 +146,7 @@
                 </tr>
             </table>
         </div>
-        <div class="col-md-6 col-md-pull-6 tables" style='overflow: auto; max-height: 800px; min-height:180px; border:3px solid #444; padding:0px;'>
+        <div class="col-md-6 col-md-pull-6 tables" style='overflow: auto; max-height: 800px; min-height:230px; border:3px solid #444; padding:0px;'>
             <!-- 暂时没有数据 -->
             <div><h4 class='now_time'></h4></div>
             <table class="table table-condensed bets">
@@ -292,34 +294,56 @@
                     var bookmaker2 = $(this).parents("tr").next().next().children('td').eq(0).find('b').text();
                     var home_away1 = $(this).parents("tr").next().children('td').eq(1).find('b').text();
                     var home_away2 = $(this).parents("tr").next().next().children('td').eq(1).find('b').text();
-                    var league = $(this).parents("tr").next().children('td').eq(1).find('small').text();
+                    var league1 = $(this).parents("tr").next().children('td').eq(1).find('small').text();
+                    var league2 = $(this).parents("tr").next().next().children('td').eq(1).find('small').text();
                     var bet_variation1 = $(this).parents("tr").next().children('td').eq(2).find('span').text();
                     var bet_variation2 = $(this).parents("tr").next().next().children('td').eq(2).find('span').text();
                     var koef1 = $(this).parents("tr").next().children('td').eq(3).find('b').text();
                     var koef2 = $(this).parents("tr").next().next().children('td').eq(3).find('b').text();
 
-                    var stake = 2000;
-                    $('.calculator').find('tr').eq(3).children('td').eq(3).children('input').eq(0).val(stake);
                     $('.calculator').find('tr').eq(0).children('td').eq(0).children('b').eq(0).text(sport);
                     $('.calculator').find('tr').eq(0).children('td').eq(2).children('div').eq(0).find('li').eq(0).find('a').text(bookmaker1);
                     $('.calculator').find('tr').eq(0).children('td').eq(2).children('div').eq(0).find('li').eq(1).find('a').text(bookmaker2);
                     $('.calculator').find('tr').eq(0).children('td').eq(2).children('div').eq(0).find('li').eq(2).children('a').children('span').eq(0).text(bookmaker1);
                     $('.calculator').find('tr').eq(0).children('td').eq(2).children('div').eq(0).find('li').eq(2).children('a').children('span').eq(1).text(bookmaker2);
 
-                    $('.calculator').find('tr').eq(0).children('td').eq(1).find('b').text(home_away1);
+                    home_away1_arr = home_away1.split(' - ')
+                    home1 = home_away1_arr[0]
+                    away1 = home_away1_arr[1]
+                    home_away2_arr = home_away2.split(' - ')
+                    home2 = home_away2_arr[0]
+                    away2 = home_away2_arr[1]
+
+                    $('.calculator').find('tr').eq(0).children('td').eq(1).children('b').eq(0).children('span').eq(0).text(home1);
+                    $('.calculator').find('tr').eq(0).children('td').eq(1).children('b').eq(0).children('span').eq(1).text(away1);
+                    $('.calculator').find('tr').eq(0).children('td').eq(1).children('b').eq(1).children('span').eq(0).text(home2);
+                    $('.calculator').find('tr').eq(0).children('td').eq(1).children('b').eq(1).children('span').eq(1).text(away2);
                     $('.calculator').find('tr').eq(0).children('td').eq(1).find('b').attr('homeaway2', home_away2)
                     $('.calculator').find('tr').eq(0).children('td').eq(1).children('small').eq(0).children('span').eq(0).text(period);
-                    $('.calculator').find('tr').eq(0).children('td').eq(1).children('small').eq(1).text(league);
+                    $('.calculator').find('tr').eq(0).children('td').eq(1).children('small').eq(1).text(league1);
+                    $('.calculator').find('tr').eq(0).children('td').eq(1).children('small').eq(2).text(league2);
                     $('.calculator').find('tr').eq(2).children('td').eq(0).children('span').eq(0).text(bet_variation1);
                     $('.calculator').find('tr').eq(2).children('td').eq(0).children('span').eq(1).text(bet_variation2);
                     $('.calculator').find('tr').eq(2).children('td').eq(1).children('span').eq(0).text(bookmaker1);
                     $('.calculator').find('tr').eq(2).children('td').eq(1).children('span').eq(1).text(bookmaker2);
                     $('.calculator').find('tr').eq(2).children('td').eq(2).children('input').eq(0).val(koef1);
                     $('.calculator').find('tr').eq(2).children('td').eq(2).children('input').eq(1).val(koef2);
-                    stake1 = (((1/koef1)/((1/koef1) + (1/koef2)))*stake).toFixed(2); 
-                    stake2 = (((1/koef2)/((1/koef1) + (1/koef2)))*stake).toFixed(2); 
+                    if(bookmaker1 == 'Marathon') {
+                        stake1 = 2000    
+                        stake2 = ((stake1 * koef1)/koef2).toFixed(2);
+                        stake = parseFloat(stake1) + parseFloat(stake2)
+                    } else if(bookmaker2 == 'Marathon') {
+                        stake2 = 2000
+                        stake1 = ((stake2 * koef2)/koef1).toFixed(2);
+                        stake = parseFloat(stake1) + parseFloat(stake2)
+                    } else {
+                        stake = 3000;
+                        stake1 = (((1/koef1)/((1/koef1) + (1/koef2)))*stake).toFixed(2); 
+                        stake2 = (((1/koef2)/((1/koef1) + (1/koef2)))*stake).toFixed(2); 
+                    }
                     profit1 = (stake1 * koef1 - stake).toFixed(2);
                     profit2 = (stake2 * koef2 - stake).toFixed(2);
+                    $('.calculator').find('tr').eq(3).children('td').eq(3).children('input').eq(0).val(stake);
                     $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(0).val(stake1);
                     $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(1).val(stake2);
                     $('.calculator').find('tr').eq(2).children('td').eq(6).find('span').eq(0).text(profit1);
