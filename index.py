@@ -13,7 +13,7 @@ app = Flask(__name__)
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 now_queue = Queue.Queue()
-_data_info = {'data':[], 'now_tim':None} 
+_data_info = {'data':[], 'now_time':None} 
 _hide_bet = []
 
 @app.route('/')
