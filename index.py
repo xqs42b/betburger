@@ -62,20 +62,19 @@ def get_one_data():
                 _hide_bet.remove(h)
     try:
         if datas and _hide_bet:
-            # new_datas = [] 
+            remove_datas = [] 
+            new_datas = []
             for d in datas:
                 for h in _hide_bet:
-                    if d['sport'] == h['sport']:
-                        if d['bet1']['bookmaker'] == h['bookmaker']:
-                            if d['bet1']['home'] == h['home'] and d['bet1']['away'] == h['away']:
-                                get_data['data'].remove(d)
-                                continue
-                        if d['bet2']['bookmaker'] == h['bookmaker']:
-                            if d['bet2']['home'] == h['home'] and d['bet2']['away'] == h['away']:
-                                get_data['data'].remove(d)
-            #         new_datas.append(d)
-            # get_data['data'] = new_datas
-            # return jsonify(get_data)
+                    if (d['bet1']['home'] == h['home']) and (d['bet1']['away'] == h['away']) and (d['sport'] == h['sport']) and (d['bet1']['bookmaker'] == h['bookmaker']):
+                        remove_datas.append(d)
+                    if (d['bet2']['home'] == h['home']) and (d['bet2']['away'] == h['away']) and (d['sport'] == h['sport']) and (d['bet2']['bookmaker'] == h['bookmaker']):
+                        remove_datas.append(d)
+            for ds in datas:
+                if ds not in remove_datas:
+                    new_datas.append(ds)
+            get_data['data'] = new_datas
+            return jsonify(get_data)
     except Exception as e:
         print e
         # traceback.print_exc()
@@ -170,7 +169,7 @@ def hide_event():
                 res_dict2['bookmaker'] = bookmaker2
                 res_dict2['create_time'] = now_time
                 _hide_bet.append(res_dict2)
-            print '_hide_bet:', _hide_bet
+            # print '_hide_bet:', _hide_bet
         except Exception as e:
             print '==============hide_error================', e
             # print traceback.print_exc()
