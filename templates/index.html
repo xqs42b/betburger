@@ -224,8 +224,9 @@
                 now_bookmaker = $(this).children('a').text();
                 now_index = $(this).index();
                 sport = $('.calculator').find('tr').eq(0).children('td').eq(0).children('b').eq(0).text();
-                home_away1 = $('.calculator').find('tr').eq(0).children('td').eq(1).find('b').text();
-                home_away2 = $('.calculator').find('tr').eq(0).children('td').eq(1).find('b').attr('homeaway2');
+                // home_away1 = $('.calculator').find('tr').eq(0).children('td').eq(1).find('b').text();
+                home_away1 = $('.calculator').find('tr').eq(0).children('td').eq(1).children('b').eq(0).text();
+                home_away2 = $('.calculator').find('tr').eq(0).children('td').eq(1).children('b').eq(1).text();
                 bookmaker1 = $('.calculator').find('tr').eq(2).children('td').eq(1).children('span').eq(0).text();
                 bookmaker2 = $('.calculator').find('tr').eq(2).children('td').eq(1).children('span').eq(1).text();
                 if(now_index == 0) {
@@ -240,9 +241,11 @@
                     url: '/hide_event/',
                     data: data,
                     success: function(res) {
-                        if(res.hide) {
+                        if(res.hide == true) {
                             layer.msg('隐藏成功！');
                             $('.calculator').hide();
+                        } else if(res.hide == 'repeat') {
+                            layer.msg('已经重复隐藏了！');
                         } else {
                             layer.msg('隐藏失败！');
                         }

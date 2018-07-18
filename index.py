@@ -52,8 +52,9 @@ def get_one_data():
     # data = get_one_db()
     global _data_info
     global _hide_bet
-    data = _data_info
-    datas = data['data']
+    get_data = _data_info
+    datas = get_data['data']
+    print 'hide_data_len:', len(_hide_bet)
     now_time = int(time.time())
     if _hide_bet:
         for h in _hide_bet:
@@ -61,28 +62,24 @@ def get_one_data():
                 _hide_bet.remove(h)
     try:
         if datas and _hide_bet:
+            # new_datas = [] 
             for d in datas:
                 for h in _hide_bet:
                     if d['sport'] == h['sport']:
-                        if d['bet1']['bookmaker'] == h['bookmaker1']:
-                            if (d['bet1']['home'] == h['home1']) and (d['bet1']['away'] == h['away1']):
-                                datas.remove(d)
+                        if d['bet1']['bookmaker'] == h['bookmaker']:
+                            if d['bet1']['home'] == h['home'] and d['bet1']['away'] == h['away']:
+                                get_data['data'].remove(d)
                                 continue
-                        if d['bet1']['bookmaker'] == h['bookmaker2']:
-                            if (d['bet1']['home'] == h['home2']) and (d['bet1']['away'] == h['away2']):
-                                datas.remove(d)
-                                continue
-                        if d['bet2']['bookmaker'] == h['bookmaker1']:
-                            if (d['bet2']['home'] == h['home1']) and (d['bet2']['away'] == h['away1']):
-                                datas.remove(d)
-                                continue
-                        if d['bet2']['bookmaker'] == h['bookmaker2']:
-                            if (d['bet2']['home'] == h['home2']) and (d['bet2']['away'] == h['away2']):
-                                datas.remove(d)
-                                continue
+                        if d['bet2']['bookmaker'] == h['bookmaker']:
+                            if d['bet2']['home'] == h['home'] and d['bet2']['away'] == h['away']:
+                                get_data['data'].remove(d)
+            #         new_datas.append(d)
+            # get_data['data'] = new_datas
+            # return jsonify(get_data)
     except Exception as e:
         print e
-    return jsonify(data)
+        # traceback.print_exc()
+    return jsonify(get_data)
 
 @app.route('/login/', methods=['GET'])
 def login():
@@ -111,50 +108,72 @@ def hide_event():
     隐藏对应的比赛
     '''
     global _hide_bet
-    res_dict = {}
+    res_dict1 = {}
+    res_dict2 = {}
     if request.method == 'GET':
         try:
             sport = request.args.get('sport')
             home_away1 = request.args.get('home_away1')
-            if home_away1 and home_away1.find(' - '):
-                home1, away1 = home_away1.split(' - ')
+            home_away2 = request.args.get('home_away2')
+            bookmaker1 = request.args.get('bookmaker1')
+            bookmaker2 = request.args.get('bookmaker2')
+            if not sport:
+                return jsonify({'hide':False})
+            if bookmaker1 and home_away1:
+                if home_away1.find(' - '):
+                    home1, away1 = home_away1.split(' - ')
+                else:
+                    return jsonify({'hide':False})
             else:
                 home1 = ''
                 away1 = ''
-            home_away2 = request.args.get('home_away2')
-            if home_away2 and home_away2.find(' - '):
-                home2, away2 = home_away2.split(' - ')
+
+            if bookmaker2 and home_away2:
+                if home_away2.find(' - '):
+                    home2, away2 = home_away2.split(' - ')
+                else:
+                    return jsonify({'hide':False})
             else:
                 home2 = ''
                 away2 = ''
-            bookmaker1 = request.args.get('bookmaker1')
-            bookmaker2 = request.args.get('bookmaker2')
             now_time = int(time.time())
-            
+            is_append1 = True
+            is_append2 = True
             if _hide_bet:
                 for h in _hide_bet:
                     if h['sport'] == sport:
                         if home1 and away1 and home2 and away2:
-                            if h['home1'] == home1 and h['away1'] == away1 and h['home2'] and h['away2']:
-                                return jsonify({'hide': False})
-                        if home1 and away1:
-                            if h['home1'] == home1 and h['away1'] == away1:
-                                return jsonify({'hide': False})
-                        if home2 and away2:    
-                            if h['home2'] == home2 and h['away2'] == away2:
-                                return jsonify({'hide': False})
+                            if h['home'] == home1 and h['away'] == away1:
+                                is_append1 = False 
+                            if h['home'] == home2 and h['away'] == away2:
+                                is_append2 = False
+                            if not is_append1 and not is_append2:
+                                return jsonify({'hide': 'repeat'})
+                        if home1 and away1 and (not home2) and (not away2):
+                            if h['home'] == home1 and h['away'] == away1:
+                                return jsonify({'hide': 'repeat'})
+                        if home2 and away2 and (not home1) and (not away1):    
+                            if h['home'] == home2 and h['away'] == away2:
+                                return jsonify({'hide': 'repeat'})
+            if is_append1 and bookmaker1 and home1 and away1:
+                res_dict1['sport'] = sport
+                res_dict1['home'] = home1
+                res_dict1['away'] = away1 
+                res_dict1['bookmaker'] = bookmaker1
+                res_dict1['create_time'] = now_time
+                _hide_bet.append(res_dict1)
 
-            res_dict['sport'] = sport
-            res_dict['home1'] = home1
-            res_dict['away1'] = away1 
-            res_dict['bookmaker1'] = bookmaker1
-            res_dict['home2'] = home2
-            res_dict['away2'] = away2
-            res_dict['bookmaker2'] = bookmaker2
-            res_dict['create_time'] = now_time
-            _hide_bet.append(res_dict)
+            if is_append2 and bookmaker2 and home2 and away2:
+                res_dict2['sport'] = sport
+                res_dict2['home'] = home2
+                res_dict2['away'] = away2
+                res_dict2['bookmaker'] = bookmaker2
+                res_dict2['create_time'] = now_time
+                _hide_bet.append(res_dict2)
+            print '_hide_bet:', _hide_bet
         except Exception as e:
-            print e
+            print '==============hide_error================', e
+            # print traceback.print_exc()
             return jsonify({'hide': False})
         return jsonify({'hide': True})
 
