@@ -15,6 +15,7 @@ log.setLevel(logging.ERROR)
 now_queue = Queue.Queue()
 _data_info = {'data':[], 'now_time':None} 
 _hide_bet = []
+_FILE_PATH = 'cookies/betburger'
 
 @app.route('/')
 def index(): 
@@ -44,6 +45,10 @@ def while_get_data():
             is_logout = now_queue.get_nowait()
             if is_logout == 'logout':
                 print '退出循环'
+                # with open(_FILE_PATH, 'w') as f:
+                #     f.write('{}')
+                betburger_manager._ACCESS_TOKEN = ''
+                betburger_manager._SEARCH_FILTER_ID = ''
                 break
         _data_info['data'] = data 
 
@@ -66,9 +71,11 @@ def get_one_data():
             new_datas = []
             for d in datas:
                 for h in _hide_bet:
-                    if (d['bet1']['home'] == h['home']) and (d['bet1']['away'] == h['away']) and (d['sport'] == h['sport']) and (d['bet1']['bookmaker'] == h['bookmaker']):
+                    if (d['bet1']['home'] == h['home']) and (d['bet1']['away'] == h['away']) and \
+                    (d['sport'] == h['sport']) and (d['bet1']['bookmaker'] == h['bookmaker']):
                         remove_datas.append(d)
-                    if (d['bet2']['home'] == h['home']) and (d['bet2']['away'] == h['away']) and (d['sport'] == h['sport']) and (d['bet2']['bookmaker'] == h['bookmaker']):
+                    if (d['bet2']['home'] == h['home']) and (d['bet2']['away'] == h['away']) and \
+                    (d['sport'] == h['sport']) and (d['bet2']['bookmaker'] == h['bookmaker']):
                         remove_datas.append(d)
             for ds in datas:
                 if ds not in remove_datas:

@@ -6,7 +6,12 @@ import requests
 import json
 import time
 import traceback
-from lxml import etree
+import string
+import random
+import re
+import gzip
+import StringIO
+# from lxml import etree
 from requests.packages import urllib3
 
 _FILE_PATH = 'cookies/betburger'
@@ -50,9 +55,6 @@ class Betburger(object):
         print 'request_count:', _REQUEST_COUNT
         print 'access_token:', _ACCESS_TOKEN
         print 'search_filter_id:', _SEARCH_FILTER_ID
-        '''
-        获取页面所有的数据
-        '''
         url = self._url
         if not _ACCESS_TOKEN and not _SEARCH_FILTER_ID:
             if self.username and self.password:
@@ -351,7 +353,7 @@ class Betburger(object):
         '''
         headers = {}
         headers['Accept'] = '*/*'
-        headers['Accept-Encoding'] = 'gzip, deflate, br'
+        # headers['accept-encoding'] = 'gzip, deflate, br'
         headers['Accept-Language'] = 'zh-CN,zh;q=0.9'
         headers['Connection'] = 'keep-alive'
         headers['Host'] = 'api-lv.betburger.com'
@@ -467,7 +469,6 @@ class Betburger(object):
         输入用户名，和密码
         '''
         if not self.username or not self.password:
-            print '进来了'
             return False 
         url = 'https://www.betburger.com/users/sign_in'
         # headers = self.betburger_login_headers()
@@ -500,8 +501,8 @@ class Betburger(object):
                 f.write(str(cookie_dict))
             return True
         except Exception, e:
-            print e
-            # traceback.print_exc()
+            print '===============login==============',e
+            traceback.print_exc()
             return False 
 
     def get_token_cookie(self):
@@ -521,8 +522,13 @@ class Betburger(object):
         if rp:
             web_cookie = dict(rp.cookies)
             html = rp.content
-            html_obj = etree.HTML(html) 
-            token = html_obj.xpath("//input[@name='authenticity_token']/@value")[0]
+            pattern = '.+name="authenticity_token" value="(.+)?"'
+            token_obj = re.search(pattern, html)
+            if token_obj is None:
+                return ''
+            else:
+                token = token_obj.group(1)
+            print '===========================', token
             web_cookie['time_zone_offset'] = str(8)
             result = {}
             result['token'] = token
