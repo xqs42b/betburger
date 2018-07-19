@@ -46,13 +46,17 @@
         .header_banner {
             background-color: rgb(54, 95, 129);
         }
+        .sites > label {
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
     <div class='container' style="height: 1400px;">
         <div class="btns" style="margin-bottom:6px;">
-            <button class='btn_login btn btn-primary'>登录</button>
+            <button class='btn_login btn btn-primary' style="display: none;">登录</button>
             <button class='btn_logout btn btn-primary'>退出</button>
+            <button class='btn_sites btn btn-primary'>网址选择</button>
         </div>
         <div class="col-md-6 col-md-push-6" style='height:240px; border:3px solid #444; padding: 3px;'>
             <table class='table table-condensed calculator' style='display: none;'>
@@ -155,10 +159,23 @@
         </div>
         <!-- <div class="col-md-6 col-md-push-6" style="padding: 3px;">我在右下边</div> -->
     </div>
+    <div class="sites" style='display: none;'>
+        <label for="">全选</label>
+        <input type="checkbox" class='all' value='all'><br />
+        <label for="">Bet365</label>
+        <input type="checkbox" class='checkbox_style' value="Bet365">
+        <label for="">Marathon</label>
+        <input type="checkbox" class='checkbox_style' value="Marathon">
+        <label for="">188bet</label>
+        <input type="checkbox" class='checkbox_style' value="188bet">
+        <label for="">Pinnacle</label>
+        <input type="checkbox" class='checkbox_style' value="Pinnacle">
+    </div>
     <textarea id='input'></textarea>
 </body>
     <script>
         $(function() {
+            // $('.btn_login').hide();
             window.setInterval(get_one_data, 1000);
             function get_one_data(){
                 $.ajax({
@@ -182,7 +199,6 @@
                 });
             }            
 
-            $('.btn_login').hide();
             //用户登录
             $('.btn_login').click(function() {
                 $.ajax({
@@ -249,6 +265,56 @@
                         } else {
                             layer.msg('隐藏失败！');
                         }
+                    }
+                });
+            });
+
+            // 选择要显示的网址
+            $('.btn_sites').click(function() {
+                // $('.layui-layer-title').css('color', '');
+                layer.open({
+                    title: '<span style="">请选择网址</span>',
+                    type: 1,
+                    area: ['600px', '360px'],
+                    btn: ['确定', '退出'],
+                    content: $('.sites'),
+                });
+            });
+
+            // 全选
+            $('.all').click(function() {
+                if($(this).is(':checked')) {
+                    $('.checkbox_style').each(function() {
+                        $(this).prop('checked', true);
+                    });
+                } else {
+                    $('.checkbox_style').each(function() {
+                        $(this).prop('checked', false);
+                    });
+                }
+            });
+            // 单选
+            $('.checkbox_style').click(function() {
+                var children_checkbox = $(this).is(':checked');
+                var parent_checkbox = $('.all').is(':checked');
+                input_len = $('.all').siblings('input').length;
+                true_num = 0 
+                false_num = 0
+                $('.all').siblings('input').each(function() {
+                    now_checkbox = $(this).is(':checked');
+                    if(now_checkbox == true) {
+                        true_num += 1;
+                    } else {
+                        false_num += 1;
+                    }
+                    if(true_num == input_len) {
+                        $('.all').prop('checked', true);
+                    } 
+                    if(false_num == input_len) {
+                        $('.all').prop('checked', false);
+                    }
+                    if(false_num > 0 && false_num < input_len) {
+                        $('.all').prop('checked', false);
                     }
                 });
             });
@@ -417,8 +483,6 @@
                 koef2 = $('.calculator').find('tr').eq(2).children('td').eq(2).children('input').eq(1).val();
                 stake = $('.calculator').find('tr').eq(3).children('td').eq(3).children('input').eq(0).val();
                 koef1 = $('.calculator').find('tr').eq(2).children('td').eq(2).children('input').eq(0).val();
-                // stake1 = $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(0).val();
-                // stake2 = $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(1).val();
                 koef1 = is_need_value(koef1);
                 $('.calculator').find('tr').eq(2).children('td').eq(2).children('input').eq(0).val(koef1);
                 if(koef1 == '') {
