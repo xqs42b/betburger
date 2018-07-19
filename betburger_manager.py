@@ -9,9 +9,6 @@ import traceback
 import string
 import random
 import re
-import gzip
-import StringIO
-# from lxml import etree
 from requests.packages import urllib3
 
 _FILE_PATH = 'cookies/betburger'
