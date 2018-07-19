@@ -24,15 +24,15 @@ def index():
 def while_get_data():
     global _data_info
     global now_queue
-    _username = '54256821@qq.com'
-    _password = 'Aa555888'
-    # _username = ''
-    # _password = ''
+    # _username = '54256821@qq.com'
+    # _password = 'Aa555888'
+    _username = ''
+    _password = ''
     betburger_class = betburger_manager.Betburger(_username, _password)
 
     n = 0
     while True:
-        # time.sleep(1)
+        time.sleep(1)
         n += 1
         print '=============%d'%n
         data = betburger_class.get_data_info()
