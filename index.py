@@ -45,8 +45,6 @@ def while_get_data():
             is_logout = now_queue.get_nowait()
             if is_logout == 'logout':
                 print '退出循环'
-                # with open(_FILE_PATH, 'w') as f:
-                #     f.write('{}')
                 betburger_manager._ACCESS_TOKEN = ''
                 betburger_manager._SEARCH_FILTER_ID = ''
                 break
@@ -59,7 +57,6 @@ def get_one_data():
     global _hide_bet
     get_data = _data_info
     datas = get_data['data']
-    print 'hide_data_len:', len(_hide_bet)
     now_time = int(time.time())
     if _hide_bet:
         for h in _hide_bet:
