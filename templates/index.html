@@ -64,7 +64,9 @@
                 <tr>
                     <td>
                         <b>Soccer</b>
-                        <!-- <small>regular time</small> -->
+                        <br>
+                        <br>
+                        <b>100%</b>
                     </td>
                     <td colspan="5">
                         <b homeaway2=''><span style="cursor: pointer;color:black;" class='copy_home1'>china</span> - <span class='copy_away1' style="cursor: pointer;color:black;">brazil</span></b>&nbsp;&nbsp;<small style='padding-left: 4px;'>[<span>regular time</span>]</small><br/>
@@ -423,6 +425,7 @@
                     var koef2 = $(this).parents("tr").next().next().children('td').eq(3).find('b').text();
 
                     $('.calculator').find('tr').eq(0).children('td').eq(0).children('b').eq(0).text(sport);
+                    $('.calculator').find('tr').eq(0).children('td').eq(0).children('b').eq(1).text(percent);
                     $('.calculator').find('tr').eq(0).children('td').eq(2).children('div').eq(0).find('li').eq(0).find('a').text(bookmaker1);
                     $('.calculator').find('tr').eq(0).children('td').eq(2).children('div').eq(0).find('li').eq(1).find('a').text(bookmaker2);
                     $('.calculator').find('tr').eq(0).children('td').eq(2).children('div').eq(0).find('li').eq(2).children('a').children('span').eq(0).text(bookmaker1);
@@ -549,6 +552,8 @@
                     stake2 = (((1/koef2)/((1/koef1) + (1/koef2)))*stake).toFixed(2); 
                     profit1 = (stake1 * koef1 - stake).toFixed(2);
                     profit2 = (stake2 * koef2 - stake).toFixed(2);
+                    profit_percent = ((profit1/stake) * 100).toFixed(2);
+                    $('.calculator').find('tr').eq(0).children('td').eq(0).children('b').eq(1).text(profit_percent + '%');
                     $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(0).val(stake1);
                     $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(1).val(stake2);
                     $('.calculator').find('tr').eq(2).children('td').eq(6).find('span').eq(0).text(profit1);
@@ -579,6 +584,8 @@
                     stake2 = (((1/koef2)/((1/koef1) + (1/koef2)))*stake).toFixed(2); 
                     profit1 = (stake1 * koef1 - stake).toFixed(2);
                     profit2 = (stake2 * koef2 - stake).toFixed(2);
+                    profit_percent = ((profit1/stake) * 100).toFixed(2);
+                    $('.calculator').find('tr').eq(0).children('td').eq(0).children('b').eq(1).text(profit_percent + '%');
                     $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(0).val(stake1);
                     $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(1).val(stake2);
                     $('.calculator').find('tr').eq(2).children('td').eq(6).find('span').eq(0).text(profit1);
@@ -603,6 +610,8 @@
                     $('.calculator').find('tr').eq(3).children('td').eq(3).children('input').eq(0).val(stake.toFixed(2));
                     profit1 = (stake1 * koef1 - stake).toFixed(2);
                     profit2 = (stake2 * koef2 - stake).toFixed(2);
+                    profit_percent = ((profit1/stake) * 100).toFixed(2);
+                    $('.calculator').find('tr').eq(0).children('td').eq(0).children('b').eq(1).text(profit_percent + '%');
                     $('.calculator').find('tr').eq(2).children('td').eq(6).find('span').eq(0).text(profit1);
                     $('.calculator').find('tr').eq(2).children('td').eq(6).find('span').eq(1).text(profit2);
                 }
@@ -621,12 +630,14 @@
                     stake1 = (stake2 * koef2)/koef1;
                     $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(0).val(parseFloat(stake1).toFixed(2));
                     stake = parseFloat(stake1) + parseFloat(stake2);
-                    $('.calculator').find('tr').eq(3).children('td').eq(3).children('input').eq(0).val(stake);
+                    $('.calculator').find('tr').eq(3).children('td').eq(3).children('input').eq(0).val(stake.toFixed(2));
                     if(koef1 == '' || koef2 == '' || stake1 == '') {
                         return false;
                     }
                     profit1 = (stake1 * koef1 - stake).toFixed(2);
                     profit2 = (stake2 * koef2 - stake).toFixed(2);
+                    profit_percent = ((profit1/stake) * 100).toFixed(2);
+                    $('.calculator').find('tr').eq(0).children('td').eq(0).children('b').eq(1).text(profit_percent + '%');
                     $('.calculator').find('tr').eq(2).children('td').eq(6).find('span').eq(0).text(profit1);
                     $('.calculator').find('tr').eq(2).children('td').eq(6).find('span').eq(1).text(profit2);
                 }
@@ -654,6 +665,8 @@
                     stake2 = (((1/koef2)/((1/koef1) + (1/koef2)))*stake).toFixed(2); 
                     profit1 = (stake1 * koef1 - stake).toFixed(2);
                     profit2 = (stake2 * koef2 - stake).toFixed(2);
+                    profit_percent = ((profit1/stake) * 100).toFixed(2);
+                    $('.calculator').find('tr').eq(0).children('td').eq(0).children('b').eq(1).text(profit_percent + '%');
                     $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(0).val(stake1);
                     $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(1).val(stake2);
                     $('.calculator').find('tr').eq(2).children('td').eq(6).find('span').eq(0).text(profit1);
