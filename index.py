@@ -1,19 +1,22 @@
 # coding=utf-8
 
 import time
+import datetime
 import threading
 import Queue
 import json
 import traceback
 import betburger_manager 
 import logging
+import os
+import shutil
 from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 now_queue = Queue.Queue()
-_data_info = {'data':[], 'now_time':None} 
+_data_info = {'data':[], 'now_time':None, 'is_login': True} 
 _hide_bet = []
 _FILE_PATH = 'cookies/betburger'
 
@@ -38,8 +41,10 @@ def while_get_data():
         data = betburger_class.get_data_info()
         print 'data:', len(data)
         if data:
-            now_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-            _data_info['now_time'] = now_time
+            now_time = datetime.datetime.now() 
+            add_hour = datetime.timedelta(hours=8)
+            add_now_time = now_time + add_hour
+            _data_info['now_time'] = add_now_time.strftime('%Y-%m-%d %H:%M:%S') 
         print 'now_queue_size:', now_queue.qsize()
         if not now_queue.empty():
             is_logout = now_queue.get_nowait()
@@ -89,11 +94,14 @@ def login():
     '''
     登录
     '''
+    global _data_info
     try:
         t1 = threading.Thread(target=while_get_data)
         t1.start()
     except:
+        _data_info['is_login'] = False
         return jsonify({'status': False})
+    _data_info['is_login'] = True 
     return jsonify({'status': True})
 
 @app.route('/logout/', methods=['GET'])
@@ -102,8 +110,26 @@ def logout():
     退出登录
     '''
     global now_queue
+    global _data_info
     now_queue.put('logout')
+    _data_info['is_login'] = False
     return jsonify({'status': True})
+
+@app.route('/del_tmp/', methods=['GET'])
+def del_tmp(): 
+    '''
+    删除tmp里面的文件
+    '''
+    if request.method == 'GET':
+        now_dir = os.getcwd() + '/tmp/'
+        dir_list = os.listdir(now_dir)
+        if len(dir_list) > 0:
+            shutil.rmtree(now_dir)
+            os.mkdir(now_dir)
+        return jsonify({'is_del': True}) 
+    else:
+        return jsonify({'is_del': False}) 
+
 
 @app.route('/hide_event/', methods=['GET'])
 def hide_event():

@@ -186,6 +186,13 @@
                     success: function(res) {
                         res_len = (res.data).length;
                         console.log(res_len);
+                        if(res.is_login == false) {
+                            $('.btn_logout').hide();
+                            $('.btn_login').show();
+                        } else {
+                            $('.btn_login').hide();
+                            $('.btn_logout').show();
+                        }
                         add_html(res.data, res.now_time);
                     }
                 });
