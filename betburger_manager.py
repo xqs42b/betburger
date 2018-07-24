@@ -153,13 +153,13 @@ class Betburger(object):
                                 if bet[_ID_] == res['bet1']['bc_id']:
                                     res['bet1']['bet_value'] = bet[_VALUE_]
                                     res['bet1']['bv_id'] = bet[_BV_ID_]
-                                    res['bet1']['bet_variation_name1'] = bet['title'].split('-')[1]
+                                    res['bet1']['bet_variation_name1'] = bet['title']
                                     bet1_break = True
                             if not bet2_break:
                                 if bet[_ID_] == res['bet2']['bc_id']:
                                     res['bet2']['bet_value'] = bet[_VALUE_]
                                     res['bet2']['bv_id'] = bet[_BV_ID_]
-                                    res['bet2']['bet_variation_name1'] = bet['title'].split('-')[1]
+                                    res['bet2']['bet_variation_name1'] = bet['title']
                                     bet1_break = True
                             if bet1_break and bet2_break:
                                 break
