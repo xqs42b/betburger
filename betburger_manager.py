@@ -142,8 +142,8 @@ class Betburger(object):
                     bet_combinations_data = bet_value_data['bet_combinations']
                 else:
                     return ''
-                # bet_variations_data = directories_data['bet_variations']
 
+                # bet_variations_data = directories_data['bet_variations']
                 for res in result:
                     if len(new_bet_val_url) > 0 and len(bet_value_data) > 0:
                         bet1_break = False 
@@ -151,14 +151,14 @@ class Betburger(object):
                         for bet in bet_combinations_data:
                             if not bet1_break:
                                 if bet[_ID_] == res['bet1']['bc_id']:
-                                    res['bet1']['bet_value'] = bet[_VALUE_]
-                                    res['bet1']['bv_id'] = bet[_BV_ID_]
+                                    # res['bet1']['bet_value'] = bet[_VALUE_]
+                                    # res['bet1']['bv_id'] = bet[_BV_ID_]
                                     res['bet1']['bet_variation_name1'] = bet['title']
                                     bet1_break = True
                             if not bet2_break:
                                 if bet[_ID_] == res['bet2']['bc_id']:
-                                    res['bet2']['bet_value'] = bet[_VALUE_]
-                                    res['bet2']['bv_id'] = bet[_BV_ID_]
+                                    # res['bet2']['bet_value'] = bet[_VALUE_]
+                                    # res['bet2']['bv_id'] = bet[_BV_ID_]
                                     res['bet2']['bet_variation_name1'] = bet['title']
                                     bet1_break = True
                             if bet1_break and bet2_break:
