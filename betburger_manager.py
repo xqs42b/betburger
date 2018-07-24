@@ -77,7 +77,7 @@ class Betburger(object):
         bet_url_str = ''
         if len(web_json_data) > 0:
             data = json.loads(web_json_data)
-            if not data['arbs']:
+            if 'arbs' not in data:
                 return ''
             try:
                 for dataTmp in data['arbs']:
@@ -142,7 +142,7 @@ class Betburger(object):
                     bet_combinations_data = bet_value_data['bet_combinations']
                 else:
                     return ''
-                bet_variations_data = directories_data['bet_variations']
+                # bet_variations_data = directories_data['bet_variations']
 
                 for res in result:
                     if len(new_bet_val_url) > 0 and len(bet_value_data) > 0:
@@ -153,28 +153,30 @@ class Betburger(object):
                                 if bet[_ID_] == res['bet1']['bc_id']:
                                     res['bet1']['bet_value'] = bet[_VALUE_]
                                     res['bet1']['bv_id'] = bet[_BV_ID_]
+                                    res['bet1']['bet_variation_name1'] = bet['title'].split('-')[1]
                                     bet1_break = True
                             if not bet2_break:
                                 if bet[_ID_] == res['bet2']['bc_id']:
                                     res['bet2']['bet_value'] = bet[_VALUE_]
                                     res['bet2']['bv_id'] = bet[_BV_ID_]
+                                    res['bet2']['bet_variation_name1'] = bet['title'].split('-')[1]
                                     bet1_break = True
                             if bet1_break and bet2_break:
                                 break
 
-                        b1_break = False
-                        b2_break = False
-                        for variationsData in bet_variations_data:
-                            if not b1_break:
-                                if res['bet1']['bv_id'] == variationsData[_ID_]:
-                                    res['bet1']['bet_variation_name'] = variationsData[_NAME_]
-                                    b1_break = True
-                            if not b2_break:
-                                if res['bet2']['bv_id'] == variationsData[_ID_]:
-                                    res['bet2']['bet_variation_name'] = variationsData[_NAME_]
-                                    b2_break = True
-                            if b1_break and b2_break:
-                                break
+                        # b1_break = False
+                        # b2_break = False
+                        # for variationsData in bet_variations_data:
+                        #     if not b1_break:
+                        #         if res['bet1']['bv_id'] == variationsData[_ID_]:
+                        #             res['bet1']['bet_variation_name'] = variationsData[_NAME_]
+                        #             b1_break = True
+                        #     if not b2_break:
+                        #         if res['bet2']['bv_id'] == variationsData[_ID_]:
+                        #             res['bet2']['bet_variation_name'] = variationsData[_NAME_]
+                        #             b2_break = True
+                        #     if b1_break and b2_break:
+                        #         break
                     else:
                         result = ''
             except Exception, e:
