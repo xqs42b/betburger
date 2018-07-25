@@ -69,7 +69,7 @@
                         <b>100%</b>
                     </td>
                     <td colspan="5">
-                        <b homeaway2=''><span style="cursor: pointer;color:black;" class='copy_home1'>china</span> - <span class='copy_away1' style="cursor: pointer;color:black;">brazil</span></b>&nbsp;&nbsp;<small style='padding-left: 4px;'>[<span>regular time</span>]</small><br/>
+                        <b homeaway2=''><span style="cursor: pointer;color:black;" class='copy_home1'>china</span> - <span class='copy_away1' style="cursor: pointer;color:black;">brazil</span></b>&nbsp;&nbsp;<small style='padding-left: 4px;'>[<span style='color:red'>regular time</span>]</small><br/>
                         <small>FIFA world cup</small><br>
                         <b><span class='copy_home1' style="cursor: pointer;color:black;">China</span> - <span class='copy_away1' style="cursor: pointer;color:black;">Brazil</span></b><br/>
                         <small>world cup</small>
@@ -197,16 +197,6 @@
                     }
                 });
             }
-
-            // 删除服务器tmp中的临时文件
-            times = 1000 * 60 * 30 * 6 
-            // times = 2000
-            var t = window.setInterval(del, times)
-            function del() {
-                $.get('/del_tmp/', function(res){
-
-                });
-            }            
 
             //用户登录
             $('.btn_login').click(function() {

@@ -9,7 +9,7 @@ import traceback
 import string
 import random
 import re
-from requests.packages import urllib3
+# from requests.packages import urllib3
 
 _FILE_PATH = 'cookies/betburger'
 IndexArray=['home', 'away', 'league', 'current_score', 'market_depth', 'koef', 'created_at', 'updated_at', 'started_at']
@@ -73,6 +73,9 @@ class Betburger(object):
         #     _REQUEST_COUNT = 0
         #     _ACCESS_TOKEN = self.refresh_token(_ACCESS_TOKEN)
         directories_data = self.get_directories(self._dir_url, self.url_mid_name)        
+        if not directories_data:
+            return '' 
+
         result = []
         bet_url_str = ''
         if len(web_json_data) > 0:
@@ -230,12 +233,12 @@ class Betburger(object):
         for dir in dir_list:
             if dir.split('.')[0] == url_mid_name:
                 is_open = False
-
         headers_tmp={'If-None-Match': '3a0362770e0052df257ccb65039d9110'}
         headers = self.make_headers(headers_tmp)
 
         if is_open:
             data = self.is_request_success(url, methods='get', headers=headers)
+            print len(data)
             if data != "":
                 data = json.loads(data)
                 with open(file_dir, 'w') as f:
@@ -286,12 +289,14 @@ class Betburger(object):
         '''
         获取目录对应的数据
         '''
-        if dir_data[dir_kw] != "":
-            for d in dir_data[dir_kw]:
-                if d['id'] == dir_id:
-                    return d[get_kw]
-        else:
-            return ""
+        if dir_data:
+            if dir_data[dir_kw] != "":
+                for d in dir_data[dir_kw]:
+                    if d['id'] == dir_id:
+                        return d[get_kw]
+            else:
+                return ""
+        return '' 
 
 
     def judge_index(self, bet_id, data):
