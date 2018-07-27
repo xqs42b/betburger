@@ -156,13 +156,13 @@ class Betburger(object):
                                 if bet[_ID_] == res['bet1']['bc_id']:
                                     # res['bet1']['bet_value'] = bet[_VALUE_]
                                     # res['bet1']['bv_id'] = bet[_BV_ID_]
-                                    res['bet1']['bet_variation_name1'] = bet['title']
+                                    res['bet1']['bet_variation_name1'] = self.change_handicap(bet['title'])
                                     bet1_break = True
                             if not bet2_break:
                                 if bet[_ID_] == res['bet2']['bc_id']:
                                     # res['bet2']['bet_value'] = bet[_VALUE_]
                                     # res['bet2']['bv_id'] = bet[_BV_ID_]
-                                    res['bet2']['bet_variation_name1'] = bet['title']
+                                    res['bet2']['bet_variation_name1'] = self.change_handicap(bet['title'])
                                     bet1_break = True
                             if bet1_break and bet2_break:
                                 break
@@ -190,6 +190,56 @@ class Betburger(object):
             result = ''
         print 'res_len:', len(result)
         return result
+
+    def change_handicap(self, title):
+        '''
+        转换盘口
+        '''
+        if title == 'GBH2-Y()':
+            title = 'Team2 to score in both halves - yes'
+        elif title == 'GBH2-N()':
+            title = 'Team2 to score in both halves - no'
+        elif title == 'GBH1-Y()':
+            title = 'Team1 to score in both halves - yes'
+        elif title == 'GBH1-N()':
+            title = 'Team1 to score in both halves - no'
+        elif title.startswith('F-F1'):
+            title = title.replace('F-F1', 'AH1')
+        elif title.startswith('F-F2'):
+            title = title.replace('F-F2', 'AH2')
+        elif title.startswith('1X2-2'):
+            title = '2'
+        elif title.startswith('1X2-1'):
+            title = '1'
+        elif title.startswith('1X2-X'):
+            title = 'X'
+        elif title.startswith('EH-EH1'):
+            title = title.replace('EH-EH1', 'EH1')
+        elif title.startswith('EH-EH2'):
+            title = title.replace('EH-EH2', 'EH2')
+        elif title == 'BTS-Y()':
+            title = 'Both to score'
+        elif title == 'BTS-N()':
+            title = 'One scoreless'
+        elif title.startswith('OU2-TO'):
+            title = title.replace('OU2-TO', 'TO') + 'for Team2'
+        elif title.startswith('OU2-TU'):
+            title = title.replace('OU2-TU', 'TU') + 'for Team2'
+        elif title.startswith('OU1-TO'):
+            title = title.replace('OU1-TO', 'TO') + 'for Team1'
+        elif title.startswith('OU1-TU'):
+            title = title.replace('OU1-TU', 'TU') + 'for Team1'
+        elif title == 'ML-ML1()':
+            title = 'Team1 win'
+        elif title == 'ML-ML2()':
+            title = 'Team2 win'
+        elif title.startswith('OU-TO'):
+            title = title.replace('OU-TO', 'TO')
+        elif title.startswith('OU-TU'):
+            title = title.replace('OU-TU', 'TU')
+        else:
+            title = title 
+        return title
 
     def refresh_token(self, access_token):
         '''

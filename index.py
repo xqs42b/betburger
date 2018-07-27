@@ -27,10 +27,10 @@ def index():
 def while_get_data():
     global _data_info
     global now_queue
-    # _username = '54256821@qq.com'
-    # _password = 'Aa555888'
-    _username = ''
-    _password = ''
+    _username = '54256821@qq.com'
+    _password = 'Aa555888'
+    # _username = ''
+    # _password = ''
     betburger_class = betburger_manager.Betburger(_username, _password)
 
     n = 0
@@ -52,6 +52,11 @@ def while_get_data():
                 print '退出循环'
                 betburger_manager._ACCESS_TOKEN = ''
                 betburger_manager._SEARCH_FILTER_ID = ''
+                now_dir = os.getcwd() + '/tmp/'
+                dir_list = os.listdir(now_dir)
+                if len(dir_list) > 0:
+                    shutil.rmtree(now_dir)
+                    os.mkdir(now_dir)                
                 break
         _data_info['data'] = data 
 
@@ -114,22 +119,6 @@ def logout():
     now_queue.put('logout')
     _data_info['is_login'] = False
     return jsonify({'status': True})
-
-@app.route('/del_tmp/', methods=['GET'])
-def del_tmp(): 
-    '''
-    删除tmp里面的文件
-    '''
-    if request.method == 'GET':
-        now_dir = os.getcwd() + '/tmp/'
-        dir_list = os.listdir(now_dir)
-        if len(dir_list) > 0:
-            shutil.rmtree(now_dir)
-            os.mkdir(now_dir)
-        return jsonify({'is_del': True}) 
-    else:
-        return jsonify({'is_del': False}) 
-
 
 @app.route('/hide_event/', methods=['GET'])
 def hide_event():
