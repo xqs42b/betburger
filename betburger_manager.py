@@ -154,15 +154,29 @@ class Betburger(object):
                         for bet in bet_combinations_data:
                             if not bet1_break:
                                 if bet[_ID_] == res['bet1']['bc_id']:
-                                    # res['bet1']['bet_value'] = bet[_VALUE_]
+                                    res['bet1']['bet_value'] = bet[_VALUE_]
                                     # res['bet1']['bv_id'] = bet[_BV_ID_]
-                                    res['bet1']['bet_variation_name1'] = self.change_handicap(bet['title'])
+                                    bet_name_value = self.change_handicap(bet['title'])
+                                    left_brackets_index1 = bet_name_value.find('(')
+                                    right_brackets_index1 = bet_name_value.find(')')
+                                    if (left_brackets_index1 != -1) and (right_brackets_index1 != -1):
+                                        res['bet1']['bet_name'] = bet_name_value.replace(bet_name_value[left_brackets_index1:right_brackets_index1+1], '')
+                                    else:
+                                        res['bet1']['bet_name'] = bet_name_value
+                                    res['bet1']['bet_variation_name'] = bet_name_value 
                                     bet1_break = True
                             if not bet2_break:
                                 if bet[_ID_] == res['bet2']['bc_id']:
-                                    # res['bet2']['bet_value'] = bet[_VALUE_]
+                                    res['bet2']['bet_value'] = bet[_VALUE_]
                                     # res['bet2']['bv_id'] = bet[_BV_ID_]
-                                    res['bet2']['bet_variation_name1'] = self.change_handicap(bet['title'])
+                                    bet_name_value = self.change_handicap(bet['title'])
+                                    left_brackets_index2 = bet_name_value.find('(')
+                                    right_brackets_index2 = bet_name_value.find(')')
+                                    if (left_brackets_index2 != -1) and (right_brackets_index2 != -1) :
+                                        res['bet2']['bet_name'] = bet_name_value.replace(bet_name_value[left_brackets_index2:right_brackets_index2+1], '')
+                                    else:
+                                        res['bet1']['bet_name'] = bet_name_value
+                                    res['bet2']['bet_variation_name'] = bet_name_value 
                                     bet1_break = True
                             if bet1_break and bet2_break:
                                 break
@@ -213,6 +227,10 @@ class Betburger(object):
             title = '1'
         elif title.startswith('1X2-X'):
             title = 'X'
+        elif title == 'DC-1X()':
+            title = '1X'
+        elif title == 'DC-X2()':
+            title = 'X2'
         elif title.startswith('EH-EH1'):
             title = title.replace('EH-EH1', 'EH1')
         elif title.startswith('EH-EH2'):
@@ -222,13 +240,13 @@ class Betburger(object):
         elif title == 'BTS-N()':
             title = 'One scoreless'
         elif title.startswith('OU2-TO'):
-            title = title.replace('OU2-TO', 'TO') + 'for Team2'
+            title = title.replace('OU2-TO', 'TO') + ' for Team2'
         elif title.startswith('OU2-TU'):
-            title = title.replace('OU2-TU', 'TU') + 'for Team2'
+            title = title.replace('OU2-TU', 'TU') + ' for Team2'
         elif title.startswith('OU1-TO'):
-            title = title.replace('OU1-TO', 'TO') + 'for Team1'
+            title = title.replace('OU1-TO', 'TO') + ' for Team1'
         elif title.startswith('OU1-TU'):
-            title = title.replace('OU1-TU', 'TU') + 'for Team1'
+            title = title.replace('OU1-TU', 'TU') + ' for Team1'
         elif title == 'ML-ML1()':
             title = 'Team1 win'
         elif title == 'ML-ML2()':
@@ -237,6 +255,14 @@ class Betburger(object):
             title = title.replace('OU-TO', 'TO')
         elif title.startswith('OU-TU'):
             title = title.replace('OU-TU', 'TU')
+        elif title.startswith('EG1-EG'):
+            title = title.replace('EG1-EG', 'Exact') + ' for Team1'
+        elif title.startswith('EG2-EG'):
+            title = title.replace('EG2-EG', 'Exact') + ' for Team2'
+        elif title == 'OE-ODD()':
+            title = 'Odd'
+        elif title == 'OE-EVEN()':
+            title = 'Even'
         else:
             title = title 
         return title
