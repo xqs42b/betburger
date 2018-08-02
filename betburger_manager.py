@@ -175,7 +175,7 @@ class Betburger(object):
                                     if (left_brackets_index2 != -1) and (right_brackets_index2 != -1) :
                                         res['bet2']['bet_name'] = bet_name_value.replace(bet_name_value[left_brackets_index2:right_brackets_index2+1], '')
                                     else:
-                                        res['bet1']['bet_name'] = bet_name_value
+                                        res['bet2']['bet_name'] = bet_name_value
                                     res['bet2']['bet_variation_name'] = bet_name_value 
                                     bet1_break = True
                             if bet1_break and bet2_break:
