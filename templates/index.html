@@ -177,6 +177,8 @@
 </body>
     <script>
         $(function() {
+
+            var hide_sites = Array();
             // $('.btn_login').hide();
             window.setInterval(get_one_data, 1000);
             function get_one_data(){
@@ -185,6 +187,15 @@
                     url: '/get_one_data/',
                     success: function(res) {
                         res_len = (res.data).length;
+                        hide_num = hide_sites.length;
+                        console.log('hide_num:' + hide_num);
+                        if(hide_num > 0) {
+                            now_index = get_index(hide_sites);
+                            console.log(now_index);
+                            if(now_index != -1) {
+                                hide_sites.splice(now_index, 1);
+                            }
+                        }
                         console.log(res_len);
                         if(res.is_login == false) {
                             $('.btn_logout').hide();
@@ -196,6 +207,19 @@
                         add_html(res.data, res.now_time);
                     }
                 });
+            }
+            
+            // 返回所有的索引
+            function get_index(datas) {
+                num = datas.length;
+                now_timestamp = Date.parse(new Date());
+                lack_time = 1000*60*60*2; 
+                for(var nt=0;nt<num;nt++) {
+                    if((datas[nt]['timestamp'] + lack_time) <= now_timestamp){
+                        return nt
+                    }    
+                }
+                return -1
             }
 
             //用户登录
@@ -236,36 +260,125 @@
 
             //隐藏网站以及对应的比赛
             $('.hide_event').click(function() {
+                console.log(hide_sites);
+                var one_site = Array();
+                var one_site2 = Array();
+                sport = ''
+                home_away1 = ''
+                home_away2 = ''
+                bookmaker1 = ''
+                bookmaker2 = ''
+                is_push1 = true;
+                is_push2 = true;
+                
                 now_bookmaker = $(this).children('a').text();
                 now_index = $(this).index();
                 sport = $('.calculator').find('tr').eq(0).children('td').eq(0).children('b').eq(0).text();
-                // home_away1 = $('.calculator').find('tr').eq(0).children('td').eq(1).find('b').text();
                 home_away1 = $('.calculator').find('tr').eq(0).children('td').eq(1).children('b').eq(0).text();
                 home_away2 = $('.calculator').find('tr').eq(0).children('td').eq(1).children('b').eq(1).text();
                 bookmaker1 = $('.calculator').find('tr').eq(2).children('td').eq(1).children('span').eq(0).text();
                 bookmaker2 = $('.calculator').find('tr').eq(2).children('td').eq(1).children('span').eq(1).text();
+                
+                one_site.splice(0, one_site.length);
+                one_site2.splice(0, one_site2.length);
+                one_site['sport'] = sport
+                one_site2['sport'] = sport
+                hide_sites_len = hide_sites.length
                 if(now_index == 0) {
-                    data = {'sport': sport, 'home_away1':home_away1, 'bookmaker1':bookmaker1, 'home_away2':'', 'bookmaker2':''}
-                } else if(now_index == 1) {
-                    data = {'sport': sport, 'home_away1':'', 'bookmaker1':'', 'home_away2':home_away2, 'bookmaker2':bookmaker2}
-                } else {
-                    data = {'sport': sport, 'home_away1':home_away1, 'bookmaker1':bookmaker1, 'home_away2':home_away2, 'bookmaker2':bookmaker2}
-                }
-                $.ajax({
-                    type: 'get',
-                    url: '/hide_event/',
-                    data: data,
-                    success: function(res) {
-                        if(res.hide == true) {
-                            layer.msg('隐藏成功！');
-                            $('.calculator').hide();
-                        } else if(res.hide == 'repeat') {
-                            layer.msg('已经重复隐藏了！');
-                        } else {
-                            layer.msg('隐藏失败！');
+                    if(hide_sites_len > 0) {
+                        for(var i=0; i<hide_sites_len; i++) {
+                            if((hide_sites[i]['home_away'] == home_away1) && (hide_sites[i]['bookmaker'] == bookmaker1)) {
+                                is_push1 = false;
+                            }
                         }
                     }
-                });
+                    console.log('0:' + is_push1);
+                    if(is_push1 == true) {
+                        one_site['home_away'] = home_away1
+                        one_site['bookmaker'] = bookmaker1
+                        one_site['timestamp'] = Date.parse(new Date());
+                        hide_sites.push(one_site);
+                    }
+                } else if(now_index == 1) {
+                    if(hide_sites_len > 0) {
+                        for(var j=0; j<hide_sites_len; j++) {
+                            if((hide_sites[j]['home_away'] == home_away2) && (hide_sites[j]['bookmaker'] == bookmaker2)) {
+                                is_push2 = false;
+                            }
+                        }
+                    }
+                    console.log('1:' + is_push2);
+                    if(is_push2 == true) {
+                        one_site2['home_away'] = home_away2
+                        one_site2['bookmaker'] = bookmaker2
+                        one_site2['timestamp'] = Date.parse(new Date());
+                        hide_sites.push(one_site2);
+                    }
+                } else {
+                    if(hide_sites_len > 0) {
+                        for(var k=0; k<hide_sites_len; k++) {
+                            if(hide_sites[k]['sport'] == sport) {
+                                if(hide_sites[k]['home_away'] == home_away1 && hide_sites[k]['bookmaker'] == bookmaker1) {
+                                    is_push1 = false 
+                                }
+                                if(hide_sites[k]['home_away'] == home_away2 && hide_sites[k]['bookmaker'] == bookmaker2) {
+                                    is_push2 = false 
+                                }
+                            }
+                        }
+                    }
+
+                    console.log('2:' + is_push1);
+                    console.log('2:' + is_push2);
+                    if((is_push1 == true) && (is_push2 == false)) {
+                        one_site['home_away'] = home_away1
+                        one_site['bookmaker'] = bookmaker1
+                        one_site['timestamp'] = Date.parse(new Date());
+                        hide_sites.push(one_site);
+                    } else if((is_push1 == false) && (is_push2 == true)) {
+                        one_site2['home_away'] = home_away2
+                        one_site2['bookmaker'] = bookmaker2
+                        one_site2['timestamp'] = Date.parse(new Date());
+                        hide_sites.push(one_site2);
+                        hide_sites.push(one_site2);
+                    } else if((is_push1 == true) && (is_push2 == true)) {
+                        one_site['home_away'] = home_away1
+                        one_site['bookmaker'] = bookmaker1
+                        one_site['timestamp'] = Date.parse(new Date());
+                        hide_sites.push(one_site);
+                        one_site2['home_away'] = home_away2
+                        one_site2['bookmaker'] = bookmaker2
+                        one_site2['timestamp'] = Date.parse(new Date());
+                        hide_sites.push(one_site2);
+                        hide_sites.push(one_site2);
+                    } else {
+                        return
+                    }
+                }
+
+                console.log(hide_sites);
+                // if(now_index == 0) {
+                //     data = {'sport': sport, 'home_away1':home_away1, 'bookmaker1':bookmaker1, 'home_away2':'', 'bookmaker2':''}
+                // } else if(now_index == 1) {
+                //     data = {'sport': sport, 'home_away1':'', 'bookmaker1':'', 'home_away2':home_away2, 'bookmaker2':bookmaker2}
+                // } else {
+                //     data = {'sport': sport, 'home_away1':home_away1, 'bookmaker1':bookmaker1, 'home_away2':home_away2, 'bookmaker2':bookmaker2}
+                // }
+                // $.ajax({
+                //     type: 'get',
+                //     url: '/hide_event/',
+                //     data: data,
+                //     success: function(res) {
+                //         if(res.hide == true) {
+                //             layer.msg('隐藏成功！');
+                //             $('.calculator').hide();
+                //         } else if(res.hide == 'repeat') {
+                //             layer.msg('已经重复隐藏了！');
+                //         } else {
+                //             layer.msg('隐藏失败！');
+                //         }
+                //     }
+                // });
             });
 
             // 选择要显示的网址
@@ -284,7 +397,6 @@
                             is_true = $(this).is(':checked');
                             if(is_true) {
                                 sites.push($(this).val());
-                                // console.log(sites.length);
                             }
                         });
                         layer.close(index);
@@ -348,7 +460,8 @@
                 var trs1 = '';
                 var trs2 = '';
                 var trs3 = '';
-                sites_num = sites.length
+                sites_num = sites.length;
+                hide_sites_num = hide_sites.length;
                 for(var i = 0; i < res.length; i++){
                     datas = res[i]
                     if(sites_num > 1) {
@@ -364,10 +477,93 @@
                                 is_in2 = true;
                             }
                         }
-                        if(is_in1 && is_in2) {
-                            trs1 = '';
-                            trs2 = '';
-                            trs3 = '';
+                        if(hide_sites_num > 0) {
+                            is_hide1 = true;
+                            is_hide2 = true;
+                            for(var m = 0; m < hide_sites_num; m++) {
+                                if(hide_sites[m]['sport'] == datas['sport']) {
+                                    if((hide_sites[m]['bookmaker'] == datas['bet1']['bookmaker']) && (hide_sites[m]['home_away'] == (datas['bet1']['home'] + ' - ' + datas['bet1']['away']))) {
+                                        is_hide1 = false;
+                                    }    
+                                    if((hide_sites[m]['bookmaker'] == datas['bet2']['bookmaker']) && (hide_sites[m]['home_away'] == (datas['bet2']['home'] + ' - ' + datas['bet2']['away']))) {
+                                        is_hide2 = false;
+                                    }    
+                                }
+                            }
+                            if(is_hide1 && is_hide2 && is_in1 && is_in2) {
+                                trs1 = '';
+                                trs2 = '';
+                                trs3 = '';
+                                trs1 = "<tr class='header_banner'><td colspan='3'>"
+                                + "<span style='font-weight: bold; font-size: 16px; color:white;'>" + datas['percent'].toFixed(2) + "%</span>"
+                                + "<span style='font-weight: bold; font-size: 16px; color:white; margin-left:26px;'>" + datas['sport'] + '</span><small style="padding-left:5px;color:white;">' + datas['bet1']['period'] + '</small></td>'
+                                + "<td><button class='open_calculator btn btn-primary btn-block'>计算</button>" 
+                                + "</td></tr>";
+                                trs2 = "<tr><td><b style='padding-left:5px;'>" + datas['bet1']['bookmaker'] + "</b><br /><small style='padding-left:5px;'>" + datas['bet1']['current_score'] + "</small></td>"
+                                + "<td><b><span id='copy' class='copy_home' style='cursor:pointer'>" + datas['bet1']['home'] + "</span> - <span style='cursor:pointer' class='copy_away'>" + datas['bet1']['away'] + "</span></b><br /><small>" + datas['bet1']['league'] + "</small></td>"
+                                + "<td><span>" + datas['bet1']['bet_variation_name'] + "</span></td><td><b style='padding-left:10px;'>" + datas['bet1']['koef'] + "</b></td>"
+                                + "</td></tr>";
+                                trs3 = "<tr><td><b style='padding-left:5px'>" + datas['bet2']['bookmaker'] + "</b><br /><small style='padding-left:5px;'>" + datas['bet2']['current_score'] + "</small></td>"
+                                + "<td><b><span id='copy' class='copy_home' style='cursor:pointer'>" + datas['bet2']['home'] + "</span> - <span style='cursor:pointer' class='copy_away'>" + datas['bet2']['away'] + "</span></b><br /><small>" + datas['bet2']['league'] + "</small></td>"
+                                + "<td><span>" + datas['bet2']['bet_variation_name'] + "</span></td><td><b style='padding-left:10px;'>" + datas['bet2']['koef'] + "</b></td>"
+                                + "</td></tr>";
+                                trs0 += trs1 + trs2 + trs3;                                
+                            }
+                        } else {
+                            if(is_in1 && is_in2) {
+                                trs1 = '';
+                                trs2 = '';
+                                trs3 = '';
+                                trs1 = "<tr class='header_banner'><td colspan='3'>"
+                                + "<span style='font-weight: bold; font-size: 16px; color:white;'>" + datas['percent'].toFixed(2) + "%</span>"
+                                + "<span style='font-weight: bold; font-size: 16px; color:white; margin-left:26px;'>" + datas['sport'] + '</span><small style="padding-left:5px;color:white;">' + datas['bet1']['period'] + '</small></td>'
+                                + "<td><button class='open_calculator btn btn-primary btn-block'>计算</button>" 
+                                + "</td></tr>";
+                                trs2 = "<tr><td><b style='padding-left:5px;'>" + datas['bet1']['bookmaker'] + "</b><br /><small style='padding-left:5px;'>" + datas['bet1']['current_score'] + "</small></td>"
+                                + "<td><b><span id='copy' class='copy_home' style='cursor:pointer'>" + datas['bet1']['home'] + "</span> - <span style='cursor:pointer' class='copy_away'>" + datas['bet1']['away'] + "</span></b><br /><small>" + datas['bet1']['league'] + "</small></td>"
+                                + "<td><span>" + datas['bet1']['bet_variation_name'] + "</span></td><td><b style='padding-left:10px;'>" + datas['bet1']['koef'] + "</b></td>"
+                                + "</td></tr>";
+                                trs3 = "<tr><td><b style='padding-left:5px'>" + datas['bet2']['bookmaker'] + "</b><br /><small style='padding-left:5px;'>" + datas['bet2']['current_score'] + "</small></td>"
+                                + "<td><b><span id='copy' class='copy_home' style='cursor:pointer'>" + datas['bet2']['home'] + "</span> - <span style='cursor:pointer' class='copy_away'>" + datas['bet2']['away'] + "</span></b><br /><small>" + datas['bet2']['league'] + "</small></td>"
+                                + "<td><span>" + datas['bet2']['bet_variation_name'] + "</span></td><td><b style='padding-left:10px;'>" + datas['bet2']['koef'] + "</b></td>"
+                                + "</td></tr>";
+                                trs0 += trs1 + trs2 + trs3;
+                            }
+                        }
+                    } else {
+                        if(hide_sites_num > 0) {
+                            no_site_is_hide1 = true;
+                            no_site_is_hide2 = true;
+                            for(var m = 0; m < hide_sites_num; m++) {
+                                if(hide_sites[m]['sport'] == datas['sport']) {
+                                    if((hide_sites[m]['bookmaker'] == datas['bet1']['bookmaker']) && (hide_sites[m]['home_away'] == (datas['bet1']['home'] + ' - ' + datas['bet1']['away']))) {
+                                        no_site_is_hide1 = false;
+                                    }    
+                                    if((hide_sites[m]['bookmaker'] == datas['bet2']['bookmaker']) && (hide_sites[m]['home_away'] == (datas['bet2']['home'] + ' - ' + datas['bet2']['away']))) {
+                                        no_site_is_hide2 = false;
+                                    }    
+                                }
+                            }                            
+                            if(no_site_is_hide1 && no_site_is_hide2) {
+                                trs1 = '';
+                                trs2 = '';
+                                trs3 = '';
+                                trs1 = "<tr class='header_banner'><td colspan='3'>"
+                                + "<span style='font-weight: bold; font-size: 16px; color:white;'>" + datas['percent'].toFixed(2) + "%</span>"
+                                + "<span style='font-weight: bold; font-size: 16px; color:white; margin-left:26px;'>" + datas['sport'] + '</span><small style="padding-left:5px;color:white;">' + datas['bet1']['period'] + '</small></td>'
+                                + "<td><button class='open_calculator btn btn-primary btn-block'>计算</button>" 
+                                + "</td></tr>";
+                                trs2 = "<tr><td><b style='padding-left:5px;'>" + datas['bet1']['bookmaker'] + "</b><br /><small style='padding-left:5px;'>" + datas['bet1']['current_score'] + "</small></td>"
+                                + "<td><b><span id='copy' class='copy_home' style='cursor:pointer'>" + datas['bet1']['home'] + "</span> - <span style='cursor:pointer' class='copy_away'>" + datas['bet1']['away'] + "</span></b><br /><small>" + datas['bet1']['league'] + "</small></td>"
+                                + "<td><span>" + datas['bet1']['bet_variation_name'] + "</span></td><td><b style='padding-left:10px;'>" + datas['bet1']['koef'] + "</b></td>"
+                                + "</td></tr>";
+                                trs3 = "<tr><td><b style='padding-left:5px'>" + datas['bet2']['bookmaker'] + "</b><br /><small style='padding-left:5px;'>" + datas['bet2']['current_score'] + "</small></td>"
+                                + "<td><b><span id='copy' class='copy_home' style='cursor:pointer'>" + datas['bet2']['home'] + "</span> - <span style='cursor:pointer' class='copy_away'>" + datas['bet2']['away'] + "</span></b><br /><small>" + datas['bet2']['league'] + "</small></td>"
+                                + "<td><span>" + datas['bet2']['bet_variation_name'] + "</span></td><td><b style='padding-left:10px;'>" + datas['bet2']['koef'] + "</b></td>"
+                                + "</td></tr>";
+                                trs0 += trs1 + trs2 + trs3;                                
+                            }
+                        } else {
                             trs1 = "<tr class='header_banner'><td colspan='3'>"
                             + "<span style='font-weight: bold; font-size: 16px; color:white;'>" + datas['percent'].toFixed(2) + "%</span>"
                             + "<span style='font-weight: bold; font-size: 16px; color:white; margin-left:26px;'>" + datas['sport'] + '</span><small style="padding-left:5px;color:white;">' + datas['bet1']['period'] + '</small></td>'
@@ -375,32 +571,19 @@
                             + "</td></tr>";
                             trs2 = "<tr><td><b style='padding-left:5px;'>" + datas['bet1']['bookmaker'] + "</b><br /><small style='padding-left:5px;'>" + datas['bet1']['current_score'] + "</small></td>"
                             + "<td><b><span id='copy' class='copy_home' style='cursor:pointer'>" + datas['bet1']['home'] + "</span> - <span style='cursor:pointer' class='copy_away'>" + datas['bet1']['away'] + "</span></b><br /><small>" + datas['bet1']['league'] + "</small></td>"
-                            + "<td><span>" + datas['bet1']['bet_variation_name1'] + "</span></td><td><b style='padding-left:10px;'>" + datas['bet1']['koef'] + "</b></td>"
+                            + "<td><span><small>" + datas['bet1']['bet_variation_name'] + "</small></span></td><td><b style='padding-left:10px;'>" + datas['bet1']['koef'] + "</b></td>"
                             + "</td></tr>";
                             trs3 = "<tr><td><b style='padding-left:5px'>" + datas['bet2']['bookmaker'] + "</b><br /><small style='padding-left:5px;'>" + datas['bet2']['current_score'] + "</small></td>"
                             + "<td><b><span id='copy' class='copy_home' style='cursor:pointer'>" + datas['bet2']['home'] + "</span> - <span style='cursor:pointer' class='copy_away'>" + datas['bet2']['away'] + "</span></b><br /><small>" + datas['bet2']['league'] + "</small></td>"
-                            + "<td><span>" + datas['bet2']['bet_variation_name1'] + "</span></td><td><b style='padding-left:10px;'>" + datas['bet2']['koef'] + "</b></td>"
+                            + "<td><span><small>" + datas['bet2']['bet_variation_name'] + "</small></span></td><td><b style='padding-left:10px;'>" + datas['bet2']['koef'] + "</b></td>"
                             + "</td></tr>";
                             trs0 += trs1 + trs2 + trs3;
                         }
-                    } else {
-                        trs1 = "<tr class='header_banner'><td colspan='3'>"
-                        + "<span style='font-weight: bold; font-size: 16px; color:white;'>" + datas['percent'].toFixed(2) + "%</span>"
-                        + "<span style='font-weight: bold; font-size: 16px; color:white; margin-left:26px;'>" + datas['sport'] + '</span><small style="padding-left:5px;color:white;">' + datas['bet1']['period'] + '</small></td>'
-                        + "<td><button class='open_calculator btn btn-primary btn-block'>计算</button>" 
-                        + "</td></tr>";
-                        trs2 = "<tr><td><b style='padding-left:5px;'>" + datas['bet1']['bookmaker'] + "</b><br /><small style='padding-left:5px;'>" + datas['bet1']['current_score'] + "</small></td>"
-                        + "<td><b><span id='copy' class='copy_home' style='cursor:pointer'>" + datas['bet1']['home'] + "</span> - <span style='cursor:pointer' class='copy_away'>" + datas['bet1']['away'] + "</span></b><br /><small>" + datas['bet1']['league'] + "</small></td>"
-                        + "<td><span><small>" + datas['bet1']['bet_variation_name1'] + "</small></span></td><td><b style='padding-left:10px;'>" + datas['bet1']['koef'] + "</b></td>"
-                        + "</td></tr>";
-                        trs3 = "<tr><td><b style='padding-left:5px'>" + datas['bet2']['bookmaker'] + "</b><br /><small style='padding-left:5px;'>" + datas['bet2']['current_score'] + "</small></td>"
-                        + "<td><b><span id='copy' class='copy_home' style='cursor:pointer'>" + datas['bet2']['home'] + "</span> - <span style='cursor:pointer' class='copy_away'>" + datas['bet2']['away'] + "</span></b><br /><small>" + datas['bet2']['league'] + "</small></td>"
-                        + "<td><span><small>" + datas['bet2']['bet_variation_name1'] + "</small></span></td><td><b style='padding-left:10px;'>" + datas['bet2']['koef'] + "</b></td>"
-                        + "</td></tr>";
-                        trs0 += trs1 + trs2 + trs3;
                     }
                 }
                 $('.bets').append(trs0);
+
+                // 打开计算器
                 $('.open_calculator').on('click', function() {
                     $(this).parents("tr").removeClass('header_banner').addClass('now_active').siblings('.now_active').removeClass('now_active').addClass('header_banner');
                     var percent = $(this).parents("tr").children('td').eq(0).children('span').eq(0).text();
@@ -445,6 +628,21 @@
                     $('.calculator').find('tr').eq(2).children('td').eq(1).children('span').eq(1).text(bookmaker2);
                     $('.calculator').find('tr').eq(2).children('td').eq(2).children('input').eq(0).val(koef1);
                     $('.calculator').find('tr').eq(2).children('td').eq(2).children('input').eq(1).val(koef2);
+
+                    // 如果出现bet365时，默认复制bet365主队
+                    if(bookmaker1 == 'Bet365') {
+                        var input = document.getElementById("input");
+                        input.value = home1;
+                        input.select();
+                        document.execCommand("Copy");
+                    } else if(bookmaker2 == 'Bet365') {
+                        var input = document.getElementById("input");
+                        input.value = home2;
+                        input.select();
+                        document.execCommand("Copy");
+                    } 
+
+                    /// 如果是marathon默认投注金额为2000
                     if(bookmaker1 == 'Marathon') {
                         stake1 = 2000    
                         stake2 = ((stake1 * koef1)/koef2).toFixed(2);
@@ -529,26 +727,34 @@
             $('.koef1').keyup(function() {
                 koef2 = $('.calculator').find('tr').eq(2).children('td').eq(2).children('input').eq(1).val();
                 stake = $('.calculator').find('tr').eq(3).children('td').eq(3).children('input').eq(0).val();
+                stake1 = $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(0).val();
+                stake2 = $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(1).val();
                 koef1 = $('.calculator').find('tr').eq(2).children('td').eq(2).children('input').eq(0).val();
+                bookmaker1 = $('.calculator').find('tr').eq(2).children('td').eq(1).children('span').eq(0).text();
+                bookmaker2 = $('.calculator').find('tr').eq(2).children('td').eq(1).children('span').eq(1).text();
                 koef1 = is_need_value(koef1);
                 $('.calculator').find('tr').eq(2).children('td').eq(2).children('input').eq(0).val(koef1);
-                if(koef1 == '') {
-                    $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(0).val(0);
-                    $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(1).val(0);
-                    $('.calculator').find('tr').eq(2).children('td').eq(6).find('span').eq(0).text(0);
-                    $('.calculator').find('tr').eq(2).children('td').eq(6).find('span').eq(1).text(0);
+                if(koef1 == '' || koef2 == '' || stake == '') {
+                    return false;
                 } else {
-                    if(koef2 == '' || stake == '') {
-                        return false;
+                    if(bookmaker1 == 'Marathon') {
+                        stake2 = ((koef1*stake1)/koef2).toFixed(2); 
+                        $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(1).val(stake2);
+                    } else if(bookmaker2 == 'Marathon') {
+                        stake1 = ((koef2*stake2)/koef1).toFixed(2); 
+                        $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(0).val(stake1);
+                    } else {
+                        // stake1 = (((1/koef1)/((1/koef1) + (1/koef2)))*stake).toFixed(2); 
+                        // stake2 = (((1/koef2)/((1/koef1) + (1/koef2)))*stake).toFixed(2); 
+                        stake2 = ((koef1*stake1)/koef2).toFixed(2); 
+                        $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(1).val(stake2);
                     }
-                    stake1 = (((1/koef1)/((1/koef1) + (1/koef2)))*stake).toFixed(2); 
-                    stake2 = (((1/koef2)/((1/koef1) + (1/koef2)))*stake).toFixed(2); 
+                    stake = parseFloat(stake1) + parseFloat(stake2);
                     profit1 = (stake1 * koef1 - stake).toFixed(2);
                     profit2 = (stake2 * koef2 - stake).toFixed(2);
                     profit_percent = ((profit1/stake) * 100).toFixed(2);
                     $('.calculator').find('tr').eq(0).children('td').eq(0).children('b').eq(1).text(profit_percent + '%');
-                    $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(0).val(stake1);
-                    $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(1).val(stake2);
+                    $('.calculator').find('tr').eq(3).children('td').eq(3).children('input').eq(0).val(stake);
                     $('.calculator').find('tr').eq(2).children('td').eq(6).find('span').eq(0).text(profit1);
                     $('.calculator').find('tr').eq(2).children('td').eq(6).find('span').eq(1).text(profit2);
                 }
@@ -557,38 +763,43 @@
             $('.koef2').keyup(function() {
                 stake1 = $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(0).val();
                 stake2 = $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(1).val();
-                stake = $('.calculator').find('tr').eq(3).children('td').eq(3).children('input').eq(0).val();
                 koef1 = $('.calculator').find('tr').eq(2).children('td').eq(2).children('input').eq(0).val();
                 koef2 = $('.calculator').find('tr').eq(2).children('td').eq(2).children('input').eq(1).val();
+                bookmaker1 = $('.calculator').find('tr').eq(2).children('td').eq(1).children('span').eq(0).text();
+                bookmaker2 = $('.calculator').find('tr').eq(2).children('td').eq(1).children('span').eq(1).text();
+                stake = $('.calculator').find('tr').eq(3).children('td').eq(3).children('input').eq(0).val();
                 koef2 = is_need_value(koef2);
                 $('.calculator').find('tr').eq(2).children('td').eq(2).children('input').eq(1).val(koef2);
-                if(koef2 == '') {
-                    $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(0).val(0);
-                    $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(1).val(0);
-                    $('.calculator').find('tr').eq(2).children('td').eq(6).find('span').eq(0).text(0);
-                    $('.calculator').find('tr').eq(2).children('td').eq(6).find('span').eq(1).text(0);
+                if(koef2 == '' || koef1 == '' || stake == '') {
+                    return false;
                 } else {
-                    if(koef1 == '' || stake == '') {
-                        return false;
+                    if(bookmaker1 == 'Marathon') {
+                        stake2 = ((koef1*stake1)/koef2).toFixed(2); 
+                        $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(1).val(stake2);
+                    } else if(bookmaker2 == 'Marathon') {
+                        stake1 = ((koef2*stake2)/koef1).toFixed(2); 
+                        $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(0).val(stake1);
+                    } else {
+                        stake2 = ((koef1*stake1)/koef2).toFixed(2); 
+                        $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(1).val(stake2);
                     }
-                    stake = $('.calculator').find('tr').eq(3).children('td').eq(3).children('input').eq(0).val();
+                    stake = parseFloat(stake1) + parseFloat(stake2);
                     koef1 = $('.calculator').find('tr').eq(2).children('td').eq(2).children('input').eq(0).val();
-                    stake1 = (((1/koef1)/((1/koef1) + (1/koef2)))*stake).toFixed(2); 
-                    stake2 = (((1/koef2)/((1/koef1) + (1/koef2)))*stake).toFixed(2); 
                     profit1 = (stake1 * koef1 - stake).toFixed(2);
                     profit2 = (stake2 * koef2 - stake).toFixed(2);
                     profit_percent = ((profit1/stake) * 100).toFixed(2);
                     $('.calculator').find('tr').eq(0).children('td').eq(0).children('b').eq(1).text(profit_percent + '%');
-                    $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(0).val(stake1);
-                    $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(1).val(stake2);
                     $('.calculator').find('tr').eq(2).children('td').eq(6).find('span').eq(0).text(profit1);
                     $('.calculator').find('tr').eq(2).children('td').eq(6).find('span').eq(1).text(profit2);
+                    $('.calculator').find('tr').eq(3).children('td').eq(3).children('input').eq(0).val(stake);
                 }
             });
 
             $('.stake1').keyup(function() {
                 koef1 = $('.calculator').find('tr').eq(2).children('td').eq(2).children('input').eq(0).val();
                 koef2 = $('.calculator').find('tr').eq(2).children('td').eq(2).children('input').eq(1).val();
+                bookmaker1 = $('.calculator').find('tr').eq(2).children('td').eq(1).children('span').eq(0).text();
+                bookmaker2 = $('.calculator').find('tr').eq(2).children('td').eq(1).children('span').eq(1).text();
                 stake1 = $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(0).val();
                 stake2 = $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(1).val();
                 stake1 = is_need_value(stake1);
@@ -597,8 +808,16 @@
                     if(koef1 == '' || koef2 == '' || stake2 == '') {
                         return false;
                     }
-                    stake2 = (stake1 * koef1)/koef2;
-                    $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(1).val(parseFloat(stake2).toFixed(2));
+                    if(bookmaker1 == 'Marathon') {
+                        stake2 = ((koef1*stake1)/koef2).toFixed(2); 
+                        $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(1).val(stake2);
+                    } else if(bookmaker2 == 'Marathon') {
+                        stake1 = ((koef2*stake2)/koef1).toFixed(2); 
+                        $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(0).val(stake1);
+                    } else {
+                        stake2 = ((koef1*stake1)/koef2).toFixed(2); 
+                        $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(1).val(stake2);
+                    }
                     stake = parseFloat(stake1) + parseFloat(stake2);
                     $('.calculator').find('tr').eq(3).children('td').eq(3).children('input').eq(0).val(stake.toFixed(2));
                     profit1 = (stake1 * koef1 - stake).toFixed(2);
@@ -614,14 +833,24 @@
                 koef2 = $('.calculator').find('tr').eq(2).children('td').eq(2).children('input').eq(1).val();
                 stake1 = $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(0).val();
                 stake2 = $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(1).val();
+                bookmaker1 = $('.calculator').find('tr').eq(2).children('td').eq(1).children('span').eq(0).text();
+                bookmaker2 = $('.calculator').find('tr').eq(2).children('td').eq(1).children('span').eq(1).text();
                 stake2 = is_need_value(stake2);
                 $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(1).val(stake2);
                 if(stake2 != '') {
                     if(koef1 == '' || koef2 == '' || stake1 == '') {
                         return false;
                     }
-                    stake1 = (stake2 * koef2)/koef1;
-                    $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(0).val(parseFloat(stake1).toFixed(2));
+                    if(bookmaker1 == 'Marathon') {
+                        stake2 = ((koef1*stake1)/koef2).toFixed(2); 
+                        $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(1).val(stake2);
+                    } else if(bookmaker2 == 'Marathon') {
+                        stake1 = ((koef2*stake2)/koef1).toFixed(2); 
+                        $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(0).val(stake1);
+                    } else {
+                        stake1 = ((koef2*stake2)/koef1).toFixed(2); 
+                        $('.calculator').find('tr').eq(2).children('td').eq(3).children('input').eq(0).val(stake1);
+                    }
                     stake = parseFloat(stake1) + parseFloat(stake2);
                     $('.calculator').find('tr').eq(3).children('td').eq(3).children('input').eq(0).val(stake.toFixed(2));
                     if(koef1 == '' || koef2 == '' || stake1 == '') {
@@ -665,6 +894,23 @@
                     $('.calculator').find('tr').eq(2).children('td').eq(6).find('span').eq(0).text(profit1);
                     $('.calculator').find('tr').eq(2).children('td').eq(6).find('span').eq(1).text(profit2);
                 }
+            });
+
+            // 点击输入框全选内容
+            $('.total_stake').click(function() {
+                $(this).select();
+            });
+            $('.koef1').click(function() {
+                $(this).select();
+            });
+            $('.koef2').click(function() {
+                $(this).select();
+            });
+            $('.stake1').click(function() {
+                $(this).select();
+            });
+            $('.stake2').click(function() {
+                $(this).select();
             });
         });
     </script>
