@@ -664,8 +664,8 @@ class Betburger(object):
 
 if __name__ == '__main__':
 
-    username = '54256821@qq.com'
-    password = 'Aa555888'
+    username = ''
+    password = ''
 
     bg = Betburger(username, password)
     # bg = Betburger()
